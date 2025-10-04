@@ -19,6 +19,7 @@ type NewPost struct {
 	ReplyToPostNumber int       `json:"reply_to_post_number,omitempty"`
 	EmbedURL          string    `json:"embed_url,omitempty"`
 	ExternalID        string    `json:"external_id,omitempty"`
+	Tags              []string  `json:"tags,omitempty"`
 }
 
 type PostData struct {
