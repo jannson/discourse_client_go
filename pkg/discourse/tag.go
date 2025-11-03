@@ -79,6 +79,38 @@ func GetTagByName(client *Client, name string) (response *TagData, err error) {
 	return response, err
 }
 
+// GetTagByNameWithPage retrieves topics for a specific tag with pagination support
+// Parameters:
+//   - name: Tag name
+//   - page: Page number (0-based, default 0 for first page)
+//
+// Returns topics for the specified page
+func GetTagByNameWithPage(client *Client, name string, page int) (response *TagData, err error) {
+	endpoint := fmt.Sprintf("tag/%s", name)
+
+	// Add page parameter if not the first page
+	queryString := ""
+	if page > 0 {
+		queryString = fmt.Sprintf("page=%d", page)
+	}
+
+	var data []byte
+	var sendErr error
+
+	if queryString != "" {
+		data, sendErr = client.GetWithQueryString(endpoint, queryString)
+	} else {
+		data, sendErr = client.Get(endpoint)
+	}
+
+	if sendErr != nil {
+		return nil, sendErr
+	}
+
+	err = json.Unmarshal(data, &response)
+	return response, err
+}
+
 func ListTags(client *Client) (response *ListTagsResponse, err error) {
 	data, sendErr := client.Get("tags")
 
