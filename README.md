@@ -46,6 +46,44 @@ Functions that access the Discourse site are meant to match [Discourse API](http
 | CreateTopic | /posts.json | POST | NewPost | PostData |
 | GetTopicByID | /t/{id}.json | GET || TopicData |
 | BookmarkTopicByID | /t/{id}/bookmark.json | PUT |||
+| (Solved Plugin) Accepted Answer Summary | /t/{id}.json | GET || TopicData.AcceptedAnswer |
+
+### 获取某个主题下标记为解决方案的帖子 (Accepted Solution)
+
+如果目标站点启用了 `discourse-solved` 插件，`GetTopicByID` 的返回结构 `TopicData` 中会包含一个可选字段 `AcceptedAnswer`，以及在各 `PostData` 上的布尔标记：
+
+* `PostData.AcceptedAnswer` 表示该帖子本身就是被接受的答案。
+* `PostData.TopicAcceptedAnswer` 表示所属主题已经有一个已接受答案（方便 UI 显示）。
+
+最简单的方式是：
+
+```go
+topic, _ := discourse.GetTopicByID(client, topicID)
+if topic.AcceptedAnswer != nil {
+	// 根据 post_number 在 topic.PostStream.Posts 里查找
+	for _, p := range topic.PostStream.Posts {
+		if p.PostNumber == topic.AcceptedAnswer.PostNumber {
+			fmt.Println("解决方案帖子内容:", p.Raw)
+		}
+	}
+}
+```
+
+也可以直接遍历 `topic.PostStream.Posts`，寻找 `p.AcceptedAnswer == true` 的帖子。
+
+运行完整示例：
+
+```bash
+go run ./examples/solutions
+```
+
+可通过环境变量覆盖：
+
+```bash
+SOLVED_EXAMPLE_SITE=https://meta.discourse.org SOLVED_EXAMPLE_TOPIC_ID=30155 go run ./examples/solutions
+```
+
+如果站点未启用插件或主题没有解决方案，上述字段会为 `nil` / `false`。
 | Search | /search.json | GET | See [Below](#the-search-function) | SearchResult |
 | GetSiteInfo | /site.json | GET || SiteInfo |
 | GetSiteBasicInfo | /site/basic-info.json | GET || SiteBasicInfo |

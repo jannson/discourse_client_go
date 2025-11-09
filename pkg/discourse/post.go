@@ -74,6 +74,11 @@ type PostData struct {
 	MentionedUsers              []string `json:"mentioned_users"`
 	Name                        string   `json:"name"`
 	DisplayUsername             string   `json:"display_username"`
+	// Fields below are provided by the discourse-solved plugin when enabled
+	AcceptedAnswer      bool `json:"accepted_answer"`
+	TopicAcceptedAnswer bool `json:"topic_accepted_answer"`
+	CanAcceptAnswer     bool `json:"can_accept_answer"`
+	CanUnacceptAnswer   bool `json:"can_unaccept_answer"`
 }
 
 type PostRevision struct {

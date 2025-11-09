@@ -58,6 +58,20 @@ type TopicData struct {
 	SlowModeEnabledUntil string            `json:"slow_mode_enabled_until"`
 	Summarizable         bool              `json:"summarizable"`
 	Details              TopicDetails      `json:"details"`
+	// Provided by the discourse-solved plugin when enabled. Contains high-level info about the accepted answer post.
+	AcceptedAnswer *AcceptedAnswer `json:"accepted_answer"`
+}
+
+// AcceptedAnswer represents summary information returned by the discourse-solved plugin
+// via the TopicViewSerializerExtension. We include optional accepter fields which may be
+// omitted depending on site settings.
+type AcceptedAnswer struct {
+	PostNumber       int    `json:"post_number"`
+	Username         string `json:"username"`
+	Name             string `json:"name"`
+	Excerpt          string `json:"excerpt"`
+	AccepterName     string `json:"accepter_name"`
+	AccepterUsername string `json:"accepter_username"`
 }
 
 type SuggestedTopic struct {
