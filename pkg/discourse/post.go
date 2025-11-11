@@ -216,3 +216,29 @@ func CreatePost(client *Client, post *NewPost) (response *PostData, err error) {
 	err = json.Unmarshal(data, &response)
 	return response, err
 }
+
+// UpdatePost 封装更新帖子所需的字段。根据 Discourse API，主要是 raw（正文）与可选的 edit_reason。
+// 参考官方接口：PUT /posts/{id}.json
+// 注意：服务器原始表单参数名字常为 post[raw]；此客户端统一使用 JSON 发送 raw/edit_reason。
+type UpdatePost struct {
+	Raw        string `json:"raw"`
+	EditReason string `json:"edit_reason,omitempty"`
+}
+
+// UpdatePostByID 使用 Discourse PUT /posts/{id}.json 接口更新帖子内容（与可选的编辑原因）。
+// 返回更新后的帖子数据（PostData）。
+// 如果仅想修改正文，EditReason 留空即可。
+func UpdatePostByID(client *Client, id int, update *UpdatePost) (response *PostData, err error) {
+	inputData, marshalError := json.Marshal(update)
+	if marshalError != nil {
+		return nil, marshalError
+	}
+
+	data, sendErr := client.PutWithReturn(fmt.Sprintf("posts/%d", id), inputData)
+	if sendErr != nil {
+		return nil, sendErr
+	}
+
+	err = json.Unmarshal(data, &response)
+	return response, err
+}

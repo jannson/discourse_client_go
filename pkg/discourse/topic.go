@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+// NOTE: The Discourse API previously returned either a boolean or timestamp string for `unpinned`.
+// This client now normalizes it to a simple boolean per user request. If the API returns a string
+// timestamp in your environment, JSON unmarshalling will fail and you may need to reintroduce a
+// union type similar to the prior BoolOrString implementation.
+
 type TopicData struct {
 	PostStream           PostStream        `json:"post_stream"`
 	TimelineLookup       [][]int           `json:"timeline_lookup"`
@@ -40,7 +45,7 @@ type TopicData struct {
 	Draft                string            `json:"draft"`
 	DraftKey             string            `json:"draft_key"`
 	DraftSequence        int               `json:"draft_sequence"`
-	Unpinned             string            `json:"unpinned"`
+	Unpinned             bool              `json:"unpinned"`
 	Pinned               bool              `json:"pinned"`
 	CurrentPostNumber    int               `json:"current_post_number"`
 	HighestPostNumber    int               `json:"highest_post_number"`
@@ -90,7 +95,7 @@ type SuggestedTopic struct {
 	Archetype         string            `json:"archetype"`
 	Unseen            bool              `json:"unseen"`
 	Pinned            bool              `json:"pinned"`
-	Unpinned          string            `json:"unpinned"`
+	Unpinned          bool              `json:"unpinned"`
 	Excerpt           string            `json:"excerpt"`
 	Visible           bool              `json:"visible"`
 	Closed            bool              `json:"closed"`
